@@ -527,8 +527,11 @@ module ActiveRecord
           handle
         end
 
+        # TinyTDS 2 returns false instead of raising when a statement fails.
         def internal_raw_execute(sql, raw_connection, perform_do: false)
           result = raw_connection.execute(sql)
+          raise TinyTds::Error, "failed to execute statement" if result.is_a?(FalseClass)
+
           perform_do ? result.do : result
         end
 
